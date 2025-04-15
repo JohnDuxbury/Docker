@@ -81,5 +81,26 @@ docker ps
 docker stop <container-id>
 docker build -t getting-started .
 -Multi-Container Apps and Docker Networking
+docker network create todo-app
+docker run -d \
+    --network todo-app --network-alias mysql \
+    -v todo-mysql-data:/var/lib/mysql \
+    -e MYSQL_ROOT_PASSWORD=secret \
+    -e MYSQL_DATABASE=todos \
+    mysql:8.0
 
-
+docker exec -it 9c8cf63ff31fa42aecf73edc3f85b7acf04c4438a5f2da903b3937129f54d23e mysql -u root -psecret
+SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
+| todos              |
++--------------------+
+5 rows in set (0.00 sec)
+-Connect and Test mysql
+docker run -it --network todo-app nicolaka/netshoot
+dig mysql
