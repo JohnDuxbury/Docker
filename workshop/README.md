@@ -89,7 +89,7 @@ docker run -d \
     -e MYSQL_DATABASE=todos \
     mysql:8.0
 
-docker exec -it 9c8cf63ff31fa42aecf73edc3f85b7acf04c4438a5f2da903b3937129f54d23e mysql -u root -psecret
+docker exec -it 7024f9959cb8 mysql -u root -psecret
 SHOW DATABASES;
 +--------------------+
 | Database           |
@@ -104,3 +104,68 @@ SHOW DATABASES;
 -Connect and Test mysql
 docker run -it --network todo-app nicolaka/netshoot
 dig mysql
+; <<>> DiG 9.18.25 <<>> mysql
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 31687
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;mysql.                         IN      A
+
+;; ANSWER SECTION:
+mysql.                  600     IN      A       172.18.0.2
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.11#53(127.0.0.11) (UDP)
+;; WHEN: Tue Apr 15 19:45:45 UTC 2025
+;; MSG SIZE  rcvd: 44
+exit
+docker run -d -p 192.168.2.183:3000:3000 \
+  -w /app -v "$(pwd):/app" \
+  --network todo-app \
+  -e MYSQL_HOST=mysql \
+  -e MYSQL_USER=root \
+  -e MYSQL_PASSWORD=secret \
+  -e MYSQL_DB=todos \
+  node: slim \
+  sh -c "yarn install && yarn run dev"
+docker logs -f <container-id>
+docker logs -f fbcb7241e74eaac7d0f6664ac7d45b0264d52da3af21fd6fc8289e61f3fd842f
+nodemon src/index.js
+[nodemon] 2.0.20
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching dir(s): *.*
+[nodemon] starting `node src/index.js`
+Connected to mysql db at host mysql
+Listening on port 3000
+
+docker exec -it 7024f9959cb8 mysql -p todos
+sudo nano compose.yaml
+services:
+  app:
+    image: node:slim
+    command: sh -c "yarn install && yarn run dev"
+    ports:
+      - 192.168.2.183:3000:3000
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: todos
+
+  mysql:
+    image: mysql:8.0
+    volumes:
+      - todo-mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: todos
+
+volumes:
+  todo-mysql-data:
+  
+docker compose logs -f
