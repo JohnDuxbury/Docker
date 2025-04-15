@@ -141,6 +141,17 @@ Connected to mysql db at host mysql
 Listening on port 3000
 
 docker exec -it 7024f9959cb8 mysql -p todos
+use todos;
+select * from todo_items;
++--------------------------------------+----------+-----------+
+| id                                   | name     | completed |
++--------------------------------------+----------+-----------+
+| 3b83f50e-e3e4-4c2c-b5f4-71a94804f63b | Kimchi   |         1 |
+| 85fa18c7-4271-4794-804b-f35eeac2e344 | Kombucha |         0 |
++--------------------------------------+----------+-----------+
+2 rows in set (0.00 sec)
+exit;
+
 sudo nano compose.yaml
 services:
   app:
@@ -169,3 +180,5 @@ volumes:
   todo-mysql-data:
   
 docker compose logs -f
+docker exec -it 47c224f69b48 mysql -u root -psecret
+docker compose down --volumes
