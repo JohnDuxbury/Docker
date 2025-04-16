@@ -1,0 +1,12 @@
+***Install Immich***
+sudo mkdir -p /opt/stacks/immich
+cd /opt/stacks/immich
+sudo curl -Lo compose.yaml https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
+sudo curl -Lo .env https://github.com/immich-app/immich/releases/latest/download/example.env
+sudo nano .env
+>
+UPLOAD_LOCATION=./~Pictures
+IMMICH_VERSION=release
+DB_PASSWORD=dockerpostgres
+<
+docker compose up -d
