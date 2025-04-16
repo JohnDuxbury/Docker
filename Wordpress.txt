@@ -1,0 +1,56 @@
+***Docker Wordpress***
+sudo mkdir -p /opt/stacks/wordpress
+cd /opt/stacks/wordpress
+sudo nano compose.yaml
+
+services:
+
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wpsecret
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress:/var/www/html
+
+  db:
+    image: mysql:8.0
+    restart: always
+	ports:
+	  - 3306:3306
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wpsecret
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+
+volumes:
+  wordpress:
+  db:
+  
+docker compose up -d
+docker exec -it <container-name> /bin/bash
+docker attach <container-id>
+
+docker update --restart no $(docker ps -q)
+
+Test.html in Volume
+<!DOCTYPE html>
+<html>
+<head>
+<title>PiWordPress</title>
+</head>
+<body>
+
+<h1>This is a Heading</h1>
+<p>This is a paragraph.</p>
+
+</body>
+</html>
