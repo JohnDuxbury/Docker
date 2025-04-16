@@ -1,0 +1,22 @@
+**Setting up CloudFlare tunnel onto Raspberry Pi**
+
+sudo apt install curl lsb-release
+curl -L https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-archive-keyring.gpg >/dev/null
+echo "deb [signed-by=/usr/share/keyrings/cloudflare-archive-keyring.gpg] https://pkg.cloudflare.com/cloudflared $(lsb_release -cs) main" | sudo tee  /etc/apt/sources.list.d/cloudflared.list
+sudo apt update
+sudo apt install cloudflared
+cloudflared tunnel login
+
+
+
+cloudflared tunnel create JDTUNNEL
+
+Tunnel credentials written to /home/jd/.cloudflared/TokeninLP.json. cloudflared chose this file based on where your origin certificate was found. Keep this file secret. To revoke these credentials, delete the tunnel.
+
+Created tunnel JDTUNNEL with id IDinLP
+
+cloudflared tunnel route dns JDTUNNEL PiTunnel
+
+cloudflared tunnel run --url 192.168.2.183:8080 JDTUNNEL
+
+cloudflared tunnel run --url 192.168.2.183:3000 JDTUNNEL
