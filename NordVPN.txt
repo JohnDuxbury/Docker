@@ -1,0 +1,55 @@
+*Set up Nord VPN Container via Bubuntux**
+https://my.nordaccount.com/dashboard/nordvpn/manual-configuration/server-recommendation/
+-Create access token on NordVPN Control Panel
+e9f2abb4c38453cd00a24d7cc2cb036aaa594d008f8f0a90f1f48b87176915a7
+sudo mkdir -p /opt/stacks/nordvpn
+cd /opt/stacks/nordvpn
+Pulled from https://github.com/bubuntux/nordvpn
+sudo nano compose.yaml
+
+services:
+  vpn:
+    image: ghcr.io/bubuntux/nordvpn
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      - TOKEN=TokenInLP
+      - CONNECT=uk2672.nordvpn.com
+      - TECHNOLOGY=NordLynx
+      - NETWORK=192.168.2.0/24  # So it can be accessed within the local network
+    ports:
+      - 8080:8080
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+#torrent:
+ #  image: ghcr.io/linuxserver/qbittorrent
+  # network_mode: service:vpn
+   #depends_on:
+    # - vpn
+	
+**Set up NordVPN via NordVPN**
+sudo mkdir -p /opt/stacks/nordvpn
+cd /opt/stacks/nordvpn
+sudo touch Dockerfile
+nano Dockerfile
+FROM ubuntu:24.04
+
+RUN apt-get update && \
+apt-get install -y --no-install-recommends wget apt-transport-https ca-certificates && \
+    apt-get install -y --no-install-recommends wget apt-transport-https ca-certificates && \ 
+    wget -qO /etc/apt/trusted.gpg.d/nordvpn_public.asc https://repo.nordvpn.com/gpg/nordvpn_public.asc && \
+    echo "deb https://repo.nordvpn.com/deb/nordvpn/debian stable main" > /etc/apt/sources.list.d/nordvpn.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends nordvpn && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ENTRYPOINT /etc/init.d/nordvpn start && sleep 5 && /bin/bash -c "$@"
+CMD bash
+
+sudo docker build -t nordvpn .
+
+cd /path/to/getting-started-app
+nordvpn login --token TokenInLP
+nordvpn connect
