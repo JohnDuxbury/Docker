@@ -1,0 +1,26 @@
+***Docker Node-RED***
+sudo mkdir -p /opt/stacks/nodered
+cd /opt/stacks/nodered
+sudo nano compose.yaml
+>
+services:
+  nodered:
+    container_name: nodered
+    image: nodered/node-red
+    ports:
+      - 1880:1880
+    volumes:
+      - node-red-data:/data
+    networks:
+      - node-red-net
+    environment:
+      - TZ=Europe/London
+    restart: unless-stopped
+
+volumes:
+  node-red-data:
+
+networks:
+  node-red-net:
+<
+docker compose up -d
