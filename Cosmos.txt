@@ -1,0 +1,21 @@
+
+compose.yaml
+#https://cosmos-cloud.io/doc/1%20index/#install-cosmos-as-a-docker-container
+version: '3.7'
+services:
+  cosmos-server:
+    image: azukaar/cosmos-server:latest
+    container_name: cosmos-server
+    hostname: cosmos-server
+    restart: always
+	environment:
+	  - COSMOS_HTTP_PORT=8080
+	  - COSMOS_HTTPS_PORT=8443
+	  - COSMOS_HTTPS_MODE=SELFSIGNED
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
+      - /:/mnt/host
+      - /var/lib/cosmos:/config
+    network_mode: host

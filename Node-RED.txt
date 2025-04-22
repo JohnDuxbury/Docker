@@ -15,7 +15,7 @@ services:
       - node-red-net
     environment:
       - TZ=Europe/London
-    restart: unless-stopped
+    restart: no
 
 volumes:
   node-red-data:

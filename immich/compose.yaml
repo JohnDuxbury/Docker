@@ -1,36 +1,3 @@
-***Install Immich***
-sudo mkdir /mnt/NAS
-sudo chown -R jd:jd /mnt/NAS
-lsblk
-sudo mount /dev/sda1 /mnt/NAS
-df -h
->For AutoMount
-sudo blkid /dev/sda1
-/dev/sda1: LABEL="NAS" UUID="B266-B576" BLOCK_SIZE="512" TYPE="vfat" PARTUUID="242f37c2-01"
-
-sudo nano /etc/fstab
-PARTUUID=242f37c2-01 /mnt/NAS vfat uid=jd,gid=jd 0 0
-
-sudo systemctl daemon-reload
-sudo mount -a
-df -h
-mkdir /mnt/NAS/photos
-sudo apt install samba samba-common-bin -y
-sudo nano /etc/samba/smb.conf
-[photos]
-path = /mnt/NAS/photos
-writeable = yes
-browseable = yes
-public = no
-
-sudo smbpasswd -a jd
-password=sambapwd
-
-
-sudo mkdir -p /opt/stacks/immich
-cd /opt/stacks/immich
-sudo curl -Lo compose.yaml https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
-<#compose.yaml>
 #
 # WARNING: To install Immich, follow our guide: https://immich.app/docs/install/docker-compose
 #
@@ -110,33 +77,3 @@ services:
 
 volumes:
   model-cache:
-
-sudo curl -Lo .env https://github.com/immich-app/immich/releases/latest/download/example.env
-sudo nano .env
-# You can find documentation for all the supported env variables at https://immich.app/docs/install/environment-variables
-
-# The location where your uploaded files are stored
-UPLOAD_LOCATION=/mnt/NAS/photos
-# The location where your database files are stored
-DB_DATA_LOCATION=./postgres
-
-# To set a timezone, uncomment the next line and change Etc/UTC to a TZ identifier from this list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List
-# TZ=Europe/London
-
-# The Immich version to use. You can pin this to a specific version like "v1.71.0"
-IMMICH_VERSION=release
-
-# Connection secret for postgres. You should change it to a random password
-# Please use only the characters `A-Za-z0-9`, without special characters or spaces
-DB_PASSWORD=dockerpostgres
-
-# The values below this line do not need to be changed
-###################################################################################
-DB_USERNAME=postgres
-DB_DATABASE_NAME=immich
-<#Changes
-UPLOAD_LOCATION=/mnt/NAS/photos
-IMMICH_VERSION=release
-DB_PASSWORD=dockerpostgres
->
-docker compose up -d
